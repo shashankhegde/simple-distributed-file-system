@@ -13,6 +13,7 @@
 using namespace std;
 
 CDNSClient* CDNSClient::iDNSClient;
+int CDNSClient::iInstanceCount = 0;
 
 CDNSClient* CDNSClient::Instance(char* aDNSServerIp)
 {
@@ -21,6 +22,7 @@ CDNSClient* CDNSClient::Instance(char* aDNSServerIp)
 		iDNSClient = new CDNSClient(aDNSServerIp);
 	}
 
+	iInstanceCount++;
 	return iDNSClient;
 }
 
@@ -33,9 +35,21 @@ CDNSClient::CDNSClient(char* aDNSServerIp)
 	iSocket = 0;
 }
 
+void CDNSClient::Delete()
+{
+	iInstanceCount--;
+	if(iInstanceCount == 0)
+	{
+		delete iDNSClient;
+		iDNSClient = NULL;
+	}
+}
+
 CDNSClient::~CDNSClient()
 {
-
+	delete[] iDNSServerIp;
+	if(iSocket)
+		delete iSocket;
 }
 
 TDNSInfo* CDNSClient::GetIPAddr(unsigned short aClientId)

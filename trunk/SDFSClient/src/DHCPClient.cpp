@@ -21,7 +21,10 @@ CDHCPClient::CDHCPClient(char* aDHCPServerIp)
 
 CDHCPClient::~CDHCPClient()
 {
+	if(iSocket)
+		delete iSocket;
 
+	delete[] iDHCPServerIp;
 }
 
 unsigned short CDHCPClient::GetClientId(unsigned short aSDFSClientPort)
@@ -40,6 +43,8 @@ unsigned short CDHCPClient::GetClientId(unsigned short aSDFSClientPort)
 	iSocket->RecvFrom(buffer,bufferLen);
 
 	unsigned short id = ntohs(*((unsigned short*)buffer));
+	delete[] buffer;
+
 	printf("My id : %d", id);
 	return id;
 

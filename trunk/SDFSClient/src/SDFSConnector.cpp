@@ -30,6 +30,8 @@ SDFSConnector::SDFSConnector(unsigned short aRemoteClientId, char* aRouterIp)://
 
 SDFSConnector::~SDFSConnector()
 {
+	CDNSClient::Delete();
+
 	if(iSocket)
 		delete iSocket;
 

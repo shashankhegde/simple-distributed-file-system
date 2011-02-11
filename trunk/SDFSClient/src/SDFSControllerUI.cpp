@@ -8,6 +8,7 @@
 #include "SDFSControllerUI.h"
 #include "SDFSDebug.h"
 #include "SDFSClient.h"
+#include "logger/DictionaryEvent.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +30,7 @@ SDFSControllerUI::~SDFSControllerUI()
 
 void SDFSControllerUI::Run()
 {
-	char opt;
+	char opt[5];
 	bool doContinue = true;
 	while(doContinue)
 	{
@@ -39,19 +40,39 @@ void SDFSControllerUI::Run()
 		cout << "--------------------------------\n";
 		cout << "1. Send Message\n";
 		cout << "2. Write data\n";
+		cout << "3. Insert\n";
+		cout << "4. Delete\n";
+		cout << "5. List Keys\n";
+		cout << "6. Lookup\n";
+		cout << "7. TimeTable\n";
 		cout << "0. Exit\n\n";
 		cout << "-> ";
 
-		opt = cin.get();
-		switch(opt)
+		cin >> opt;
+		switch(atoi(opt))
 		{
-		case '1':
+		case 1:
 			GetMessage();
 			break;
-		case '2':
+		case 2:
 			WriteData();
 			break;
-		case '0':
+		case 3:
+			InsertKey();
+			break;
+		case 4:
+			DeleteKey();
+			break;
+		case 5:
+			ListKeys();
+			break;
+		case 6:
+			LookupKey();
+			break;
+		case 7:
+			ShowTimeTable();
+			break;
+		case 0:
 			doContinue = false;
 			break;
 		default:
@@ -96,7 +117,7 @@ void SDFSControllerUI::WriteData()
 
 void SDFSControllerUI::SendMessage(unsigned short aClientId, unsigned long aMessageLength, void* aMessage, TMessageType aMessageType)
 {
-	cout << "SendMessage() ++, " << (char*)aMessage << endl;
+	//cout << "SendMessage() ++, " << (char*)aMessage << endl;
 	SDFSMessage* msg = new SDFSMessage();
 	msg->SetDestination(aClientId);
 	msg->SetSource(iClient->GetId());
@@ -105,5 +126,67 @@ void SDFSControllerUI::SendMessage(unsigned short aClientId, unsigned long aMess
 	msg->SetMessageData((const char*)aMessage,aMessageLength);
 
 	iClient->SendMessage(msg);
-	cout << "SendMessage() --";
+	//cout << "SendMessage() --";
+}
+
+void SDFSControllerUI::InsertKey()
+{
+	string keyValue;
+	string key;
+	string value;
+	cout << "Enter Key:Value pair : ";
+	cin  >> keyValue;
+
+	int pos = keyValue.find(':');
+	key = keyValue.substr(0,pos);
+	value = keyValue.substr(pos+1,keyValue.length());
+
+	cout << "Inserting " << key << " : " << value << endl;
+
+	DictionaryEntry de(key,value);
+	DictionaryEvent e(DictionaryEvent::EInsert,iClient->GetId(),iClient->GetTime(),&de);
+
+	char* data = e.Serialize();
+	int   dataLen = e.SerializedDataLength();
+
+	SendMessage(iClient->GetId(),dataLen,data,EDictionaryEvent);
+}
+
+void SDFSControllerUI::DeleteKey()
+{
+	string key;
+	string value="";
+	cout << "Enter Key : ";
+	cin  >> key;
+
+	DictionaryEntry de(key,value);
+	DictionaryEvent e(DictionaryEvent::EDelete,iClient->GetId(),iClient->GetTime(),&de);
+
+	char* data = e.Serialize();
+	int   dataLen = e.SerializedDataLength();
+
+	SendMessage(iClient->GetId(),dataLen,data,EDictionaryEvent);
+}
+
+void SDFSControllerUI::LookupKey()
+{
+	string key;
+	string value="";
+	cout << "Enter Key : ";
+	cin  >> key;
+	iClient->Lookup(key);
+}
+
+void SDFSControllerUI::ListKeys()
+{
+	iClient->ListKeys();
+}
+
+void SDFSControllerUI::ShowTimeTable()
+{
+	iClient->ShowTimeTable();
+}
+
+void SDFSControllerUI::Sync()
+{
 }

@@ -28,12 +28,14 @@ SDFSSocket::SDFSSocket(TSocketType aSocketType)
 
 	iSocketState = EInitial;
 	iSocketType = aSocketType;
-	iRemoteClientAddr = NULL;
+	iRemoteClientAddr = new sockaddr_storage;
 }
 
 SDFSSocket::~SDFSSocket()
 {
 	Disconnect();
+	//if(iRemoteClientAddr)
+	//	delete iRemoteClientAddr;
 }
 
 void SDFSSocket::SetupSocket(int aSocket)
@@ -302,6 +304,7 @@ int SDFSSocket::SendTo(const char* aData, unsigned long aDataLen)
 
 	socklen_t addrLen = sizeof(sockaddr_storage);
 	int sentData = sendto(iSocket,aData,aDataLen,0,(sockaddr*)iRemoteClientAddr,addrLen);
+	//cout << "sendto() req : " << aDataLen << ", sent : " << sentData << endl;
 	if(sentData < 0)
 	{
 		CDebug::Error("Can't send data");
@@ -323,6 +326,7 @@ int SDFSSocket::RecvFrom(char* aBuffer, unsigned long aDataRecvLen)
 
 	socklen_t addrLen = sizeof(sockaddr_storage);
 	int recvdData = recvfrom(iSocket,aBuffer,aDataRecvLen,0,(sockaddr*)iRemoteClientAddr,&addrLen);
+	//cout << "recvfrom(), received " << recvdData << endl;
 	if(recvdData < 0)
 	{
 		CDebug::Error("Can't recv data");

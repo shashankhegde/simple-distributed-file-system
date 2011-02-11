@@ -13,6 +13,8 @@
 #include "SDFSControllerUI.h"
 #include "SDFSConnector.h"
 #include "DHCPClient.h"
+#include "logger/Dictionary.h"
+#include "logger/EventClock.h"
 
 #include <pthread.h>
 #include <list>
@@ -31,6 +33,11 @@ public:
 	void RunClient();
 	void SendMessage(SDFSMessage* aMessage);	// locally generated messages
 	void ReceivedMessage(SDFSMessage* aMessage);
+	int  GetTime() { return iClock.GetTime(); }
+
+	void ShowTimeTable();
+	void Lookup(string& aKey);
+	void ListKeys();
 
 private:
 	static void* ClientThreadLauncher(void*);
@@ -39,10 +46,16 @@ private:
 	void PrintMessage(SDFSMessage* aMessage);
 	void ProcessData(SDFSMessage* aMessage);
 	void AppendData(SDFSMessage* aMessage);
+	void ProcessDictionaryEvent(SDFSMessage* aMessage);
+	void ProcessTimeTable(SDFSMessage* aMessage);
+	void ProcessLog(SDFSMessage* aMessage);
+
 	static void* SenderThreadLauncher(void*);
 	void SenderThread();
 	void ProcessMessage(SDFSMessage* aMessage);
 	SDFSConnector* GetConnector(unsigned short aRemoteHostId);
+
+	void Sync(unsigned short aDestination);
 
 private:
 	unsigned short iClientId;
@@ -60,6 +73,10 @@ private:
 
 	CDHCPClient* iDHCPClient;
 	char* iRouterIp;
+
+	Dictionary* iDictionary;
+	TimeTable* iTimeTable;
+	EventClock iClock;
 };
 
 #endif /* SDFSCLIENT_H_ */
