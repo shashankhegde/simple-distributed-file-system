@@ -9,7 +9,7 @@
 #define CONTROLLERUI_H_
 
 class SDFSClient;
-#include "SDFSMessage.h";
+#include "SDFSMessage.h"
 
 // TODO: Refactor to pass client's interface
 class SDFSControllerUI
@@ -24,6 +24,14 @@ private: // methods
 	void GetMessage();
 	void SendMessage(unsigned short aClientId, unsigned long aMessageLength, void* aMessage,TMessageType aMessageType);
 	void WriteData();
+
+	void InsertKey();
+	void DeleteKey();
+	void LookupKey();
+	void ShowTimeTable();
+	void ListKeys();
+
+	void Sync();
 
 private:
 	SDFSClient* iClient;

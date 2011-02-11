@@ -41,7 +41,8 @@ SDFSListener::SDFSListener(SDFSClient* aClient, unsigned short aPort)
 
 SDFSListener::~SDFSListener()
 {
-
+	if(iSocket)
+		delete iSocket;
 }
 
 int SDFSListener::Start()

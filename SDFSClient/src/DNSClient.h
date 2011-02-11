@@ -25,12 +25,13 @@ class CDNSClient
 {
 public:
 	static CDNSClient* Instance(char* aDNSServerIp); // singleton
-	~CDNSClient();
+	static void Delete();
 
 	TDNSInfo* GetIPAddr(unsigned short aClientId);
 
 protected:
 	CDNSClient(char* aDNSServerIp);
+	~CDNSClient();
 
 private: // data
 	static CDNSClient* iDNSClient;
@@ -38,6 +39,7 @@ private: // data
 
 	char* iDNSServerIp;
 	unsigned short iDNSPort;
+	static int iInstanceCount;
 };
 
 

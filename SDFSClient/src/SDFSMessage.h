@@ -16,8 +16,7 @@
  */
 
 
-// Is ACK'ing necessary?
-enum TMessageType { EString, EData, EAppendData, ERequestData, EResendData };
+enum TMessageType { EString, EData, EAppendData, ERequestData, EResendData, ELog, ETimeTable, EDictionaryEvent };
 // missing data is requested by sending a ERequestData message, which specifies byte range
 // In response, the client sends data through a EResendMessage which contains byte range of the data
 
